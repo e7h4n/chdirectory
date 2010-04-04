@@ -1,3 +1,4 @@
+" Main function Begins here
 function ChangeWorkDir()
     call DirFilePos()
 
@@ -26,12 +27,14 @@ function ChangeWorkDir()
 
     let s:dirNum = InputSth("\nEnter Dir Number: ")
 
+    " This if control need to be improved
     if s:dirNum == "q"
         return 0
     endif
 
     call ValidateInputDirNumber("Please enter a valid number!\n" . 'Or "q" to quit.' . "\n", "\nEnter Dir Number: ") " Make sure the input number is valid
 
+    " So is this one
     if s:dirNum == "q"
         return 0
     endif
@@ -45,6 +48,8 @@ function ChangeWorkDir()
 
     return 0
 endfunction
+" Main Function ENDS 
+
 
 function AddCurrentDir() " Add Current Dir to the DirFile
     call DirFilePos()
@@ -88,6 +93,12 @@ function DelDir() " Delete a specified Dir from the DirFile
     return 0
 endfunction
 
+function ShowDirList() " Simply show a list of directories stored in DirFile
+    call DirFilePos()
+    let s:dirsList = readfile(g:dir_file_pos)
+    call PrintDirs()
+endfunction
+
 function InputSth(_entry) " To simplify the input function
     call inputsave()
     let l:getInput = input(a:_entry)
@@ -96,7 +107,7 @@ function InputSth(_entry) " To simplify the input function
     return l:getInput
 endfunction
 
-function PrintDirs() " Print Directories listed in the DirFile
+function PrintDirs() " Print directories list on screen
     let l:index = 0
     while l:index < len(s:dirsList)
         echo l:index + 1 . ". " . s:dirsList[l:index] . "\n"
