@@ -1,15 +1,19 @@
 " ##### Configurations Begin #####
 if !exists("g:dir_file_pos")
-	let g:dir_file_pos = expand($HOME) . "/.vim/dirfile"
+	if has("win32") || has("win64")
+		let g:dir_file_pos = expand($VIM) . "\\vimfiles\\dirfile"
+	elseif has("unix")
+		let g:dir_file_pos = expand($HOME) . "/.vim/dirfile"
+	endif
 endif
 
-	" ##### User-defined command #####
+	" ### User-defined command ###
 command Changedir call ChangeWorkDir()
 command Addcurrentdir call AddCurrentDir()
 command Deletedir call DelDir()
 command Showdirlist call ShowDirList()
 
-	" ##### Mapping #####
+	" ### Mapping ###
 nmap <leader>cd :Changedir<CR>
 nmap <leader>da :Addcurrentdir<CR>
 nmap <leader>dd :Deletedir<CR>
@@ -32,7 +36,7 @@ function ChangeWorkDir()
     let s:dirNum = InputSth("\nChoose directory number: ")
 
     try
-		call ValidateInputDirNumber("Please enter a valid number!\n" . 'Or "q" to quit.' . "\n", "\nEnter Dir Number: ")
+		call ValidateInputDirNumber("\nPlease enter a valid number!\nOr \"q\" to quit.\n", "Choose directory number: ")
 	catch /Quit/
 		return 0
 	endtry
@@ -47,7 +51,8 @@ function ChangeWorkDir()
     return 0
 endfunction
 
-function AddCurrentDir() " Add Current Dir to the DirFile
+	" ### Add Current Dir to the DirFile ###
+function AddCurrentDir() 
 	try
 		call CheckIfDirFileExists()
 	catch /Quit/
@@ -55,12 +60,11 @@ function AddCurrentDir() " Add Current Dir to the DirFile
 	endtry
 
     let l:currentDir = getcwd()
-    let s:dirsList = readfile(g:dir_file_pos)
 
     let l:index = 0
     while l:index < len(s:dirsList)
-        if l:currentDir == expand(s:dirsList[l:index])
-            echo "\nCurrnt Dir is already in the DirFile."
+        if (l:currentDir ==# s:dirsList[l:index]) || (l:currentDir ==# strpart(s:dirsList[l:index], 0, strlen(s:dirsList[l:index]) - 1))
+            echo "\nCurrnt directory is already in the list."
             return 0
         endif
         let l:index += 1
@@ -68,11 +72,13 @@ function AddCurrentDir() " Add Current Dir to the DirFile
 
     call add(s:dirsList, l:currentDir)
     call writefile(s:dirsList, g:dir_file_pos)
+	echo "Current directory has been added."
 
     return 0
 endfunction
 
-function DelDir() " Delete a specified Dir from the DirFile
+	" ### Delete a specified Dir from the DirFile ###
+function DelDir() 
 	try
 		call CheckIfDirFileExists()
 	catch /Quit/
@@ -82,25 +88,23 @@ function DelDir() " Delete a specified Dir from the DirFile
     let s:dirsList = readfile(g:dir_file_pos)
     call PrintDirs()
 
-    let s:dirNum = InputSth("\nEnter Dir Number: ")
-
-    if s:dirNum == "q"
-        return 0
-    endif
+    let s:dirNum = InputSth("\nDelete which one? ")
 
     try
-		call ValidateInputDirNumber("\nPlease enter a valid number\nor \"q\" to quit", "\nDelete which one? ")
+		call ValidateInputDirNumber("\nPlease enter a valid number\nOr \"q\" to quit\n", "Delete which one? ")
 	catch /Quit/
 		return 0
 	endtry
 
+	echo "\"" . s:dirsList[s:dirNum - 1] . "\" has been deleted."
     unlet s:dirsList[s:dirNum - 1]
     call writefile(s:dirsList, g:dir_file_pos)
 
     return 0
 endfunction
 
-function ShowDirList() " Simply show a list of directories stored in DirFile
+	" ### Simply show a list of directories stored in DirFile ###
+function ShowDirList()
     let s:dirsList = readfile(g:dir_file_pos)
     call PrintDirs()
 endfunction
@@ -110,7 +114,9 @@ endfunction
 
 
 " ##### Minor Functions Begin #####
-function InputSth(_entry) " To simplify the input function
+	" ### A wrapper func to simplify the input function ###
+	" ### _entry arg is the string wanted to tell user to input ###
+function InputSth(_entry)
     call inputsave()
     let l:getInput = input(a:_entry)
     call inputrestore()
@@ -118,7 +124,8 @@ function InputSth(_entry) " To simplify the input function
     return l:getInput
 endfunction
 
-function PrintDirs() " Print directories list on screen
+	" ### Print directories list on screen ###
+function PrintDirs()
 	echo "Your directories:\n"
 
     let l:index = 0
@@ -130,7 +137,10 @@ function PrintDirs() " Print directories list on screen
     return 0
 endfunction
 
-function ValidateInputDirNumber(warningString, promptString) " Validate if the user inputs the valid value.
+	" ### Validate if the user inputs the valid value ###
+	" ### warningString arg showed while validation failed ###
+	" ### promptString arg tell user to reinput the value ###
+function ValidateInputDirNumber(warningString, promptString)
 	if s:dirNum == "q"
 		throw "Quit"
 	endif
@@ -162,6 +172,7 @@ function CheckIfDirFileExists()
         if l:_validate == "y"
             execute "e " . g:dir_file_pos
             echo "\nDirFile created at \"" . g:dir_file_pos . "\" please add Dir paths(one per line)"
+			throw "Quit"
             return 0
         elseif l:_validate == "n"
 			throw "Quit"
