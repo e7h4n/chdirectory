@@ -82,6 +82,7 @@ function DelDir()
 	try
 		call CheckIfDirFileExists()
 	catch /Quit/
+        echo "\nNothing to delete."
 		return 0
 	endtry
 
@@ -171,14 +172,15 @@ function CheckIfDirFileExists()
 
         if l:_validate == "y"
             execute "e " . g:dir_file_pos
+            execute "w " . g:dir_file_pos
             echo "\nDirFile created at \"" . g:dir_file_pos . "\" please add Dir paths(one per line)"
 			throw "Quit"
-            return 0
         elseif l:_validate == "n"
 			throw "Quit"
-            return 0
         endif
     endtry
+
+    return 0
 endfunction
 
 " ##### Minor Functions Ends #####
