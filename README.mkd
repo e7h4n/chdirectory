@@ -1,0 +1,22 @@
+# An easy vim plugin to change the current directory 
+
+## Installation
+
+Put all files into your ~/.vim directory. 
+
+That should put chdir.vim in ~/.vim/plugin.
+
+## Usage
+
+* <code>&lt;leader&gt;cd</code>: Select directory from dirfile to switch.
+* <code>&lt;leader&gt;da</code>: Add current directory to dirfile.
+* <code>&lt;leader&gt;dd</code>：Select directory from dirfile to delete.
+* <code>&lt;leader&gt;sl</code>：List all directorys from dirfile.
+
+Note:
+* dirfile is the file where the plugin save directorys to.
+* <code>&lt;leader&gt;</code> is <code>\</code> in default configure for vim.
+
+## Configure
+
+You could configure the default dirfile use <code>g:dir_file_pos</code>, the default value is <code>$HOME/.vim/dirfile</code>
