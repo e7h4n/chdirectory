@@ -14,6 +14,7 @@ That should put chdir.vim in ~/.vim/plugin.
 * <code>&lt;leader&gt;sl</code>：List all directorys from dirfile.
 
 Note:
+
 * dirfile is the file where the plugin save directorys to.
 * <code>&lt;leader&gt;</code> is <code>\</code> in default configure for vim.
 
